@@ -2,6 +2,7 @@ import os
 import yfinance as yf
 import requests
 from openpyxl import load_workbook
+import pathlib
 
 def update_stock_prices(filename, sheetname):
     wb = load_workbook(filename)
@@ -27,9 +28,9 @@ def update_stock_prices(filename, sheetname):
     wb.save(filename)
     print("Stock prices updated successfully!")
 
-filename = '../market.xlsx'  
-lock_filename = "../.~lock.market.xlsx#"
-lock_filename = "../.~lock.market.xlsx#"
+folderpath = pathlib.Path(__file__).parent.parent.resolve()
+filename = folderpath / 'market.xlsx'  
+lock_filename = folderpath / ".~lock.market.xlsx#"
 sheetname = 'Stocks'
 
 
