@@ -4,10 +4,8 @@ import requests
 from openpyxl import load_workbook
 
 def update_stock_prices(filename, sheetname):
-    # Load the workbook
     wb = load_workbook(filename)
     
-    # Select the sheet
     sheet = wb[sheetname]
 
     for row in sheet.iter_rows(min_row=3):
@@ -26,7 +24,6 @@ def update_stock_prices(filename, sheetname):
                 sheet[cell_name].value = price
 
 
-    # Save the workbook
     wb.save(filename)
     print("Stock prices updated successfully!")
 
