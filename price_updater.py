@@ -4,7 +4,7 @@ import requests
 from openpyxl import load_workbook
 import pathlib
 
-def update_stock_prices(filename, sheetname):
+def update_stock_prices(sheetname):
     wb = load_workbook(filename)
     
     sheet = wb[sheetname]
@@ -28,14 +28,56 @@ def update_stock_prices(filename, sheetname):
     wb.save(filename)
     print("Stock prices updated successfully!")
 
+def percent_change_close_dataframe(df):
+    first = df.iloc[0]["Close"]
+    last = df.iloc[-1]["Close"]
+
+    return (last / first) - 1
+
+
+def update_price_movements(sheetname):
+    wb = load_workbook(filename)
+
+    sheet = wb[sheetname]
+
+    first_row = sheet[1]
+
+    for row in sheet.iter_rows(min_row=3):
+        ticker_object = row[1]
+        ticker_row = ticker_object.row
+        ticker = ticker_object.value
+
+        if ticker != None:
+            if ticker[0] != "-":
+                stock = yf.Ticker(ticker)
+                
+                pct = []
+
+                pct.append(percent_change_close_dataframe(stock.history(period="2d")))
+                pct.append(percent_change_close_dataframe(stock.history(period="5d")))
+                pct.append(percent_change_close_dataframe(stock.history(period="1mo")))
+                pct.append(percent_change_close_dataframe(stock.history(period="3mo")))
+                pct.append(percent_change_close_dataframe(stock.history(period="ytd")))
+                pct.append(percent_change_close_dataframe(stock.history(period="1y")))
+
+                for col_num, value in enumerate(pct):
+                    sheet.cell(row = ticker_row, column=col_num + 3, value=value)
+
+
+    wb.save(filename)
+    print("Stock prices updated successfully!")
+
+
 folderpath = pathlib.Path(__file__).parent.parent.resolve()
 filename = folderpath / 'market.xlsx'  
 lock_filename = folderpath / ".~lock.market.xlsx#"
-sheetname = 'Stocks'
+sheets_fundemental = 'Fundemental'
+sheets_movements = "Movements"
 
 
 if not os.path.exists(lock_filename):
-    update_stock_prices(filename, sheetname)
+    #update_stock_prices(sheets_fundemental)
+    update_price_movements(sheets_movements)
 else:
     print("File already open")
 
