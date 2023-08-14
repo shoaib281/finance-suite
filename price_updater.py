@@ -3,11 +3,13 @@ import yfinance as yf
 import requests
 from openpyxl import load_workbook
 import pathlib
+import time
+import logging
 
 def update_stock_prices(sheetname):
     wb = load_workbook(filename)
-    
     sheet = wb[sheetname]
+    sheet['A1'] = time.time()
 
     for row in sheet.iter_rows(min_row=3):
         ticker_object = row[1]
@@ -26,7 +28,7 @@ def update_stock_prices(sheetname):
 
 
     wb.save(filename)
-    print("Stock prices updated successfully!")
+    logging.info("Stock prices updated successfully!")
 
 def percent_change_close_dataframe(df):
     first = df.iloc[0]["Close"]
@@ -37,10 +39,12 @@ def percent_change_close_dataframe(df):
 
 def update_price_movements(sheetname):
     wb = load_workbook(filename)
-
     sheet = wb[sheetname]
+    sheet['A1'] = time.time()
 
     first_row = sheet[1]
+
+    print(1 + "")
 
     for row in sheet.iter_rows(min_row=3):
         ticker_object = row[1]
@@ -65,19 +69,35 @@ def update_price_movements(sheetname):
 
 
     wb.save(filename)
-    print("Stock prices updated successfully!")
+    logging.info("Stock prices updated successfully!")
 
 
+curPath = pathlib.Path(__file__).parent.resolve()
 folderpath = pathlib.Path(__file__).parent.parent.resolve()
 filename = folderpath / 'market.xlsx'  
 lock_filename = folderpath / ".~lock.market.xlsx#"
 sheets_fundemental = 'Fundemental'
 sheets_movements = "Movements"
 
+logging.basicConfig(
+        filename = curPath / "log", 
+        level=logging.INFO,
+        format='%(asctime)s %(levelname)-8s %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S'
+)
+
+# Configure logger to write to a file...
+
+def my_handler(type, value, tb):
+    logging.exception("Uncaught exception: {0}".format(str(value)))
+
+import sys
+sys.excepthook = my_handler
+
 
 if not os.path.exists(lock_filename):
-    #update_stock_prices(sheets_fundemental)
+    update_stock_prices(sheets_fundemental)
     update_price_movements(sheets_movements)
 else:
-    print("File already open")
+    logging.info("File already open")
 
