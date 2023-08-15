@@ -44,8 +44,6 @@ def update_price_movements(sheetname):
 
     first_row = sheet[1]
 
-    print(1 + "")
-
     for row in sheet.iter_rows(min_row=3):
         ticker_object = row[1]
         ticker_row = ticker_object.row
