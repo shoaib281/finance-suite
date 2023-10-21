@@ -80,7 +80,8 @@ sheets_movements = "Movements"
 logging.basicConfig(
         filename = curPath / "log", 
         level=logging.INFO,
-        format='%(asctime)s %(levelname)-8s %(message)s',
+        #format='%(asctime)s %(levelname)-8s %(message)s',
+        format="%(asctime)s [%(levelname)s] %(filename)s:%(lineno)d - %(message)s",
         datefmt='%Y-%m-%d %H:%M:%S'
 )
 
@@ -94,8 +95,11 @@ sys.excepthook = my_handler
 
 
 if not os.path.exists(lock_filename):
-    update_stock_prices(sheets_fundemental)
-    update_price_movements(sheets_movements)
+    try:
+        update_stock_prices(sheets_fundemental)
+        update_price_movements(sheets_movements)
+    except Exception as e:
+        logging.exception(str(e))
 else:
     logging.info("File already open")
 
