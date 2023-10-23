@@ -19,7 +19,7 @@ def update_stock_prices(sheetname):
             if ticker[0] != "-":
 
                 stock = yf.Ticker(ticker)
-                data = stock.history(period="1d")
+                data = stock.history(period="7d")
                 price = round(data["Close"][-1], 2)
 
                 cell_name = "C" + str(ticker_object.row)
