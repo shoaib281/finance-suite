@@ -1,11 +1,11 @@
 import os
 import yfinance as yf
 from openpyxl import load_workbook
-import pathlib
 import time
 import logging
 
 from loggingInit import log_function
+from utils import FOLDERPATH
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 def update_stock_prices(sheetname):
     wb = load_workbook(filename)
     sheet = wb[sheetname]
-    sheet['A1'] = time.time()
+    sheet["A1"] = time.time()
 
     for row in sheet.iter_rows(min_row=3):
         ticker_object = row[1]
@@ -31,6 +31,7 @@ def update_stock_prices(sheetname):
                 sheet[cell_name].value = price
 
     wb.save(filename)
+
 
 def percent_change_close_dataframe(df):
     first = df.iloc[0]["Close"]
@@ -67,14 +68,13 @@ def update_price_movements(sheetname):
                 for col_num, value in enumerate(pct):
                     sheet.cell(row=ticker_row, column=col_num + 3, value=value)
 
-    sheet['A1'] = time.time()
+    sheet["A1"] = time.time()
     wb.save(filename)
 
 
-folderpath = pathlib.Path(__file__).parent.parent.resolve()
-filename = folderpath / 'market.xlsx'
-lock_filename = folderpath / ".~lock.market.xlsx#"
-sheets_fundemental = 'Fundemental'
+filename = FOLDERPATH / "market.xlsx"
+lock_filename = FOLDERPATH / ".~lock.market.xlsx#"
+sheets_fundemental = "Fundemental"
 sheets_movements = "Movements"
 
 

@@ -4,6 +4,7 @@ from appstore import main as appstore
 from loggingInit import initLogger
 
 import logging
+
 logger = logging.getLogger(__name__)
 
 

@@ -7,6 +7,7 @@ from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
+
 def my_handler(type, value, tb):
     logging.exception("Uncaught exception: {0}".format(str(value)))
 
@@ -21,7 +22,7 @@ def initLogger():
         filename=logPath / datetime.today().strftime("%Y-%m-%d"),
         level=logging.INFO,
         format="%(asctime)s [%(levelname)s] %(filename)s:%(lineno)d - %(message)s",
-        datefmt='%H:%M:%S'
+        datefmt="%H:%M:%S",
     )
 
 

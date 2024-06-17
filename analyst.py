@@ -16,8 +16,13 @@ from price_updater import percent_change_close_dataframe
 def compute_recommendation_score(recommendation):
     res = 0
 
-    count = (recommendation.strongBuy +
-             recommendation.buy + recommendation.hold + recommendation.sell + recommendation.strongSell)
+    count = (
+        recommendation.strongBuy
+        + recommendation.buy
+        + recommendation.hold
+        + recommendation.sell
+        + recommendation.strongSell
+    )
 
     if count == 0:
         return False
@@ -33,8 +38,8 @@ def compute_recommendation_score(recommendation):
 
     return res
 
-def main(n=1000):
 
+def main(n=1000):
     top_stocks = top_n_tickers(n)
 
     scores = np.array([])
@@ -47,8 +52,6 @@ def main(n=1000):
         recommendations = stock.recommendations_summary
 
         if len(recommendations) >= 4:
-
-
             recommendation = recommendations.loc[0]
 
             score = compute_recommendation_score(recommendation)
@@ -58,28 +61,31 @@ def main(n=1000):
 
             scores = np.append(scores, [score])
 
-            price_change = percent_change_close_dataframe(stock.history(period="3mo")) * 100
+            price_change = (
+                percent_change_close_dataframe(stock.history(period="3mo")) * 100
+            )
             price_changes = np.append(price_changes, [price_change])
 
     plt.figure(figsize=(8, 6))  # Optional: Adjusting figure size
-    plt.scatter(scores, price_changes, color='blue', marker='o', label='Data Points')
+    plt.scatter(scores, price_changes, color="blue", marker="o", label="Data Points")
 
     # Adding labels and title
-    plt.title('Scatter Plot Example')
-    plt.xlabel('X-axis')
-    plt.ylabel('Y-axis')
-    plt.axhline(y=0, color='k', linewidth=0.5)  # Draw horizontal axis
-    plt.axvline(x=0, color='k', linewidth=0.5)  # Draw vertical axis
+    plt.title("Scatter Plot Example")
+    plt.xlabel("X-axis")
+    plt.ylabel("Y-axis")
+    plt.axhline(y=0, color="k", linewidth=0.5)  # Draw horizontal axis
+    plt.axvline(x=0, color="k", linewidth=0.5)  # Draw vertical axis
 
     slope, intercept, r_value, p_value, std_err = linregress(scores, price_changes)
     line = (slope * scores) + intercept
-    plt.plot(scores, line, color='red', label='Line of best fit')
+    plt.plot(scores, line, color="red", label="Line of best fit")
 
-    correlation_strength = r_value ** 2
+    correlation_strength = r_value**2
 
     print("Correlation string ", correlation_strength)
 
     plt.show()
+
 
 if __name__ == "__main__":
     main()
