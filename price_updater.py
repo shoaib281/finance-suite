@@ -1,5 +1,6 @@
 import os
 import yfinance as yf
+import numpy as np
 from openpyxl import load_workbook
 import time
 import logging
@@ -37,6 +38,9 @@ def percent_change_close_dataframe(df):
     first = df.iloc[0]["Close"]
     last = df.iloc[-1]["Close"]
 
+    if np.isnan(first) and len(df) > 2:
+        first = df.iloc[1]["Close"]
+
     return (last / first) - 1
 
 
@@ -45,28 +49,22 @@ def update_price_movements(sheetname):
     wb = load_workbook(filename)
     sheet = wb[sheetname]
 
-    first_row = sheet[1]
-
     for row in sheet.iter_rows(min_row=3):
         ticker_object = row[1]
         ticker_row = ticker_object.row
         ticker = ticker_object.value
 
-        if ticker != None:
+        if ticker is not None:
             if ticker[0] != "-":
                 stock = yf.Ticker(ticker)
 
-                pct = []
+                periods = ["2d", "5d", "1mo", "3mo", "ytd", "1y"]
 
-                pct.append(percent_change_close_dataframe(stock.history(period="1d")))
-                pct.append(percent_change_close_dataframe(stock.history(period="5d")))
-                pct.append(percent_change_close_dataframe(stock.history(period="1mo")))
-                pct.append(percent_change_close_dataframe(stock.history(period="3mo")))
-                pct.append(percent_change_close_dataframe(stock.history(period="ytd")))
-                pct.append(percent_change_close_dataframe(stock.history(period="1y")))
+                for i in range(len(periods)):
+                    print(ticker, periods[i])
+                    change = percent_change_close_dataframe(stock.history(period=periods[i]))
 
-                for col_num, value in enumerate(pct):
-                    sheet.cell(row=ticker_row, column=col_num + 3, value=value)
+                    sheet.cell(row=ticker_row, column=i + 3, value=change)
 
     sheet["A1"] = time.time()
     wb.save(filename)
