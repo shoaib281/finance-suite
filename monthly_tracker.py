@@ -1,4 +1,5 @@
 import warnings
+import webbrowser
 warnings.filterwarnings('ignore')
 
 import pandas as pd
@@ -153,9 +154,14 @@ def delete_original_csv(file_path):
         print(f"⚠️ Original CSV file not found, skipping deletion: {file_path}")
     print("Finished delete_original_csv.")
 
+def open_sites():
+    webbrowser.open_new_tab("https://www.amazon.co.uk/gp/css/order-history?ref_=nav_orders_first")
+
+
 if __name__ == "__main__":
     input_file_path = find_first_csv_in_monthly()
     if input_file_path:
+        open_sites()
         output_directory = os.path.dirname(input_file_path)
         output_file_path = os.path.join(output_directory, "transformed.ods")
         process_csv(input_file_path, output_file_path)
